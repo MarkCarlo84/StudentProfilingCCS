@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSubjects, createSubject, updateSubject, deleteSubject } from '../api';
 import { BookOpen, Plus, Pencil, Trash2, X, Check, Search } from 'lucide-react';
-import { BSIT_SUBJECTS, BSCS_SUBJECTS } from '../data/subjects';
-
-// Static subjects keyed by program
-const STATIC_SUBJECTS = { BSIT: BSIT_SUBJECTS, BSCS: BSCS_SUBJECTS };
 
 const PROGRAMS = [
     { key: 'BSIT', label: 'BS Information Technology', short: 'BSIT', color: '#2563eb', bg: '#eff6ff', border: '#bfdbfe' },
@@ -49,19 +45,8 @@ export default function SubjectsMap() {
 
     const load = () => {
         setLoading(true);
-        // Merge static subjects with any custom ones saved via API
         getSubjects({ program })
-            .then(r => {
-                const apiSubjects = r.data;
-                const staticList  = (STATIC_SUBJECTS[program] || []).map((s, i) => ({ ...s, id: `static-${i}`, _static: true }));
-                // API subjects override static ones with the same subject_code
-                const apiCodes = new Set(apiSubjects.map(s => s.subject_code));
-                const merged   = [
-                    ...staticList.filter(s => !apiCodes.has(s.subject_code)),
-                    ...apiSubjects,
-                ];
-                setSubjects(merged);
-            })
+            .then(r => setSubjects(r.data))
             .finally(() => setLoading(false));
     };
     useEffect(load, [program]);
@@ -224,8 +209,8 @@ export default function SubjectsMap() {
                                                                 </td>
                                                                 <td>
                                                                     <div style={{ display: 'flex', gap: 6 }}>
-                                                                        <button style={{ ...iconBtn, opacity: s._static ? .3 : 1, cursor: s._static ? 'not-allowed' : 'pointer' }} onClick={() => !s._static && openEdit(s)} title={s._static ? 'Built-in subject' : 'Edit'}><Pencil size={13} /></button>
-                                                                        <button style={{ ...iconBtn, color: '#dc2626', opacity: s._static ? .3 : 1, cursor: s._static ? 'not-allowed' : 'pointer' }} onClick={() => !s._static && remove(s.id)} title={s._static ? 'Built-in subject' : 'Delete'}><Trash2 size={13} /></button>
+                                                                        <button style={iconBtn} onClick={() => openEdit(s)} title="Edit"><Pencil size={13} /></button>
+                                                                        <button style={{ ...iconBtn, color: '#dc2626' }} onClick={() => remove(s.id)} title="Delete"><Trash2 size={13} /></button>
                                                                     </div>
                                                                 </td>
                                                             </tr>

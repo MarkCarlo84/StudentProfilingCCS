@@ -1,1 +1,1 @@
-# CCSStudentProfiling
+# ccsprofiling-labexam
