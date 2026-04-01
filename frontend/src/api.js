@@ -1,0 +1,117 @@
+import axios from 'axios';
+
+const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+});
+
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('ccs_token');
+    if (token) config.headers['Authorization'] = `Bearer ${token}`;
+    return config;
+});
+
+// ── OTP ───────────────────────────────────────────────────────────────────────
+export const sendOtp        = (action, email) => api.post('/otp/send', { action, email });
+export const verifyOtp      = (otp, action, email) => api.post('/otp/verify', { otp, action, email });
+export const verifyLoginOtp = (email, otp) => api.post('/auth/verify-login-otp', { email, otp });
+export const changePassword = (current_password, new_password, new_password_confirmation) =>
+    api.post('/auth/change-password', { current_password, new_password, new_password_confirmation });
+
+// ── Students ──────────────────────────────────────────────────────────────────
+export const getStudents            = (params = {}) => api.get('/students', { params });
+export const getStudent             = (id) => api.get(`/students/${id}`);
+export const createStudent          = (data) => api.post('/students', data);
+export const updateStudent          = (id, data) => api.put(`/students/${id}`, data);
+export const deleteStudent          = (id) => api.delete(`/students/${id}`);
+export const studentUpdateProfile   = (id, data) => api.patch(`/students/${id}/update-profile`, data);
+export const studentAddViolation    = (id, data) => api.post(`/students/${id}/violations`, data);
+export const studentAddAffiliation  = (id, data) => api.post(`/students/${id}/affiliations`, data);
+export const studentAddSkill        = (id, data) => api.post(`/students/${id}/skills`, data);
+export const studentAddAcademicRecord = (id, data) => api.post(`/students/${id}/academic-records`, data);
+export const studentAddNonAcademicHistory = (id, data) => api.post('/non-academic-histories', { ...data, student_id: id });
+
+// ── Subjects ──────────────────────────────────────────────────────────────────
+export const getSubjects    = (params = {}) => api.get('/subjects', { params });
+export const getSubject     = (id) => api.get(`/subjects/${id}`);
+export const createSubject  = (data) => api.post('/subjects', data);
+export const updateSubject  = (id, data) => api.put(`/subjects/${id}`, data);
+export const deleteSubject  = (id) => api.delete(`/subjects/${id}`);
+export const getSubjectInfo = (id) => api.get(`/subjects/${id}/info`);
+
+// ── Grades ────────────────────────────────────────────────────────────────────
+export const getGrades          = (params = {}) => api.get('/grades', { params });
+export const getGrade           = (id) => api.get(`/grades/${id}`);
+export const createGrade        = (data) => api.post('/grades', data);
+export const updateGrade        = (id, data) => api.put(`/grades/${id}`, data);
+export const deleteGrade        = (id) => api.delete(`/grades/${id}`);
+export const computeGradeRemarks = (id) => api.get(`/grades/${id}/compute-remarks`);
+export const getGradeScore      = (id) => api.get(`/grades/${id}/get-score`);
+
+// ── Affiliations ──────────────────────────────────────────────────────────────
+export const getAffiliations      = (params = {}) => api.get('/affiliations', { params });
+export const getAffiliation       = (id) => api.get(`/affiliations/${id}`);
+export const createAffiliation    = (data) => api.post('/affiliations', data);
+export const updateAffiliation    = (id, data) => api.put(`/affiliations/${id}`, data);
+export const deleteAffiliation    = (id) => api.delete(`/affiliations/${id}`);
+export const getAffiliationDetails = (id) => api.get(`/affiliations/${id}/details`);
+
+// ── Violations ────────────────────────────────────────────────────────────────
+export const getViolations        = (params = {}) => api.get('/violations', { params });
+export const getViolation         = (id) => api.get(`/violations/${id}`);
+export const createViolation      = (data) => api.post('/violations', data);
+export const updateViolation      = (id, data) => api.put(`/violations/${id}`, data);
+export const deleteViolation      = (id) => api.delete(`/violations/${id}`);
+export const getViolationDetails  = (id) => api.get(`/violations/${id}/details`);
+export const updateViolationAction = (id, action) => api.patch(`/violations/${id}/update-action`, { action_taken: action });
+
+// ── Academic Records ──────────────────────────────────────────────────────────
+export const getAcademicRecords   = (params = {}) => api.get('/academic-records', { params });
+export const getAcademicRecord    = (id) => api.get(`/academic-records/${id}`);
+export const createAcademicRecord = (data) => api.post('/academic-records', data);
+export const updateAcademicRecord = (id, data) => api.put(`/academic-records/${id}`, data);
+export const deleteAcademicRecord = (id) => api.delete(`/academic-records/${id}`);
+export const calculateRecordGPA   = (id) => api.get(`/academic-records/${id}/calculate-gpa`);
+export const addGradeToRecord     = (id, data) => api.post(`/academic-records/${id}/add-grade`, data);
+export const getRecordGPA         = (id) => api.get(`/academic-records/${id}/get-gpa`);
+
+// ── Skills ────────────────────────────────────────────────────────────────────
+export const getSkills       = (params = {}) => api.get('/skills', { params });
+export const getSkill        = (id) => api.get(`/skills/${id}`);
+export const createSkill     = (data) => api.post('/skills', data);
+export const updateSkill     = (id, data) => api.put(`/skills/${id}`, data);
+export const deleteSkill     = (id) => api.delete(`/skills/${id}`);
+export const getSkillLevel   = (id) => api.get(`/skills/${id}/level`);
+export const updateSkillLevel = (id, level) => api.patch(`/skills/${id}/level`, { skill_level: level });
+
+// ── Non-Academic Histories ────────────────────────────────────────────────────
+export const getNonAcademicHistories  = (params = {}) => api.get('/non-academic-histories', { params });
+export const getNonAcademicHistory    = (id) => api.get(`/non-academic-histories/${id}`);
+export const createNonAcademicHistory = (data) => api.post('/non-academic-histories', data);
+export const updateNonAcademicHistory = (id, data) => api.put(`/non-academic-histories/${id}`, data);
+export const deleteNonAcademicHistory = (id) => api.delete(`/non-academic-histories/${id}`);
+export const getNonAcademicDetails    = (id) => api.get(`/non-academic-histories/${id}/details`);
+export const updateNonAcademicActivity = (id, description) => api.patch(`/non-academic-histories/${id}/update-activity`, { description });
+
+// ── Reports & Search ─────────────────────────────────────────────────────────
+export const getReportStudents = (params = {}) => api.get('/reports/students', { params });
+export const getSummary        = () => api.get('/reports/summary');
+export const searchAll         = async (query) => {
+    const response = await api.get('/search', { params: { q: query } });
+    return response.data;
+};
+
+// ── Student self-service ──────────────────────────────────────────────────────
+export const getMyProfile              = () => api.get('/student/profile');
+export const updateMyProfile           = (data) => api.patch('/student/profile', data);
+export const addMySkill                = (data) => api.post('/student/skills', data);
+export const deleteMySkill             = (id) => api.delete(`/student/skills/${id}`);
+export const addMyAffiliation          = (data) => api.post('/student/affiliations', data);
+export const deleteMyAffiliation       = (id) => api.delete(`/student/affiliations/${id}`);
+export const getMyAcademicRecords      = () => api.get('/student/academic-records');
+export const getMyViolations           = () => api.get('/student/violations');
+export const getMyNonAcademicHistories = () => api.get('/student/non-academic-histories');
+export const addMyNonAcademicHistory   = (data) => api.post('/student/non-academic-histories', data);
+export const deleteMyNonAcademicHistory = (id) => api.delete(`/student/non-academic-histories/${id}`);
+
+export default api;

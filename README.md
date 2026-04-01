@@ -1,1 +1,1 @@
-# StudentProfilingCCS
+# CCSStudentProfiling
