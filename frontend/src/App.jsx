@@ -1,0 +1,96 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './AuthContext';
+import { LoadingProvider, useLoading } from './LoadingContext';
+import LoadingScreen from './LoadingScreen';
+import Layout from './Layout';
+import Login from './pages/Login';
+
+// Admin pages
+import DashboardAdmin from './pages/DashboardAdmin';
+import StudentDataMap from './pages/StudentDataMap';
+import Reports from './pages/Reports';
+import Search from './pages/Search';
+import SubjectsMap from './pages/SubjectsMap';
+import ViolationsMap from './pages/ViolationsMap';
+import AffiliationsMap from './pages/AffiliationsMap';
+import SkillsMap from './pages/SkillsMap';
+import AcademicRecordsMap from './pages/AcademicRecordsMap';
+import NonAcademicHistoriesMap from './pages/NonAcademicHistoriesMap';
+
+// Student pages
+import DashboardStudent from './pages/DashboardStudent';
+import ChangePassword from './pages/ChangePassword';
+import StudentSkills from './pages/StudentSkills';
+import StudentAffiliations from './pages/StudentAffiliations';
+import StudentNonAcademicActivities from './pages/StudentNonAcademicActivities';
+
+function PrivateRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: "'Inter',sans-serif", color: '#78716c' }}>Loading…</div>;
+  return user ? children : <Navigate to="/login" replace />;
+}
+
+function AppRoutes() {
+  const { user, role } = useAuth();
+
+  return (
+    <Routes>
+      <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+      <Route path="/*" element={
+        <PrivateRoute>
+          <Layout>
+            <Routes>
+              {/* ── Admin ── */}
+              {role === 'admin' && <>
+                <Route path="/" element={<DashboardAdmin />} />
+                <Route path="/student-map" element={<StudentDataMap />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/subjects" element={<SubjectsMap />} />
+                <Route path="/violations" element={<ViolationsMap />} />
+                <Route path="/affiliations" element={<AffiliationsMap />} />
+                <Route path="/skills" element={<SkillsMap />} />
+                <Route path="/academic-records" element={<AcademicRecordsMap />} />
+                <Route path="/non-academic-histories" element={<NonAcademicHistoriesMap />} />
+              </>}
+
+              {/* ── Student ── */}
+              {role === 'student' && <>
+                <Route path="/" element={<DashboardStudent />} />
+                <Route path="/my-skills" element={<StudentSkills />} />
+                <Route path="/my-affiliations" element={<StudentAffiliations />} />
+                <Route path="/my-activities" element={<StudentNonAcademicActivities />} />
+                <Route path="/change-password" element={<ChangePassword />} />
+              </>}
+
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Layout>
+        </PrivateRoute>
+      } />
+    </Routes>
+  );
+}
+
+function AppInner() {
+  const { visible, onDoneRef } = useLoading();
+  return (
+    <>
+      {visible && <LoadingScreen onDone={onDoneRef?.current} />}
+      <AppRoutes />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <LoadingProvider>
+          <AppInner />
+        </LoadingProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
