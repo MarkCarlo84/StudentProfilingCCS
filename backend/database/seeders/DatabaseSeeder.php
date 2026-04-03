@@ -25,8 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('  Password: admin1234');
         $this->command->info('');
 
-        $this->call([
-            StudentWithRecordsSeeder::class,
-        ]);
+        // StudentWithRecordsSeeder is heavy — run manually if needed:
+        // php artisan db:seed --class=StudentWithRecordsSeeder
     }
 }
