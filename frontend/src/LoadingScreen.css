@@ -115,7 +115,7 @@
   height: 100%;
   width: 0%;
   background: #0f172a;
-  animation: ls-bar-grow 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: ls-bar-grow 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   animation-delay: 0.3s;
 }
 

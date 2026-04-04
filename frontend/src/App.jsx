@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 import { LoadingProvider, useLoading } from './LoadingContext';
@@ -6,24 +6,28 @@ import LoadingScreen from './LoadingScreen';
 import Layout from './Layout';
 import Login from './pages/Login';
 
-// Admin pages
-import DashboardAdmin from './pages/DashboardAdmin';
-import StudentDataMap from './pages/StudentDataMap';
-import Reports from './pages/Reports';
-import Search from './pages/Search';
-import SubjectsMap from './pages/SubjectsMap';
-import ViolationsMap from './pages/ViolationsMap';
-import AffiliationsMap from './pages/AffiliationsMap';
-import SkillsMap from './pages/SkillsMap';
-import AcademicRecordsMap from './pages/AcademicRecordsMap';
-import NonAcademicHistoriesMap from './pages/NonAcademicHistoriesMap';
+// Lazy-load all pages so they're only fetched when needed
+const DashboardAdmin            = lazy(() => import('./pages/DashboardAdmin'));
+const StudentDataMap            = lazy(() => import('./pages/StudentDataMap'));
+const Reports                   = lazy(() => import('./pages/Reports'));
+const Search                    = lazy(() => import('./pages/Search'));
+const SubjectsMap               = lazy(() => import('./pages/SubjectsMap'));
+const ViolationsMap             = lazy(() => import('./pages/ViolationsMap'));
+const AffiliationsMap           = lazy(() => import('./pages/AffiliationsMap'));
+const SkillsMap                 = lazy(() => import('./pages/SkillsMap'));
+const AcademicRecordsMap        = lazy(() => import('./pages/AcademicRecordsMap'));
+const NonAcademicHistoriesMap   = lazy(() => import('./pages/NonAcademicHistoriesMap'));
+const DashboardStudent          = lazy(() => import('./pages/DashboardStudent'));
+const ChangePassword            = lazy(() => import('./pages/ChangePassword'));
+const StudentSkills             = lazy(() => import('./pages/StudentSkills'));
+const StudentAffiliations       = lazy(() => import('./pages/StudentAffiliations'));
+const StudentNonAcademicActivities = lazy(() => import('./pages/StudentNonAcademicActivities'));
 
-// Student pages
-import DashboardStudent from './pages/DashboardStudent';
-import ChangePassword from './pages/ChangePassword';
-import StudentSkills from './pages/StudentSkills';
-import StudentAffiliations from './pages/StudentAffiliations';
-import StudentNonAcademicActivities from './pages/StudentNonAcademicActivities';
+const PageFallback = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#78716c', fontFamily: "'Inter',sans-serif" }}>
+    Loading…
+  </div>
+);
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -40,32 +44,34 @@ function AppRoutes() {
       <Route path="/*" element={
         <PrivateRoute>
           <Layout>
-            <Routes>
-              {/* ── Admin ── */}
-              {role === 'admin' && <>
-                <Route path="/" element={<DashboardAdmin />} />
-                <Route path="/student-map" element={<StudentDataMap />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/subjects" element={<SubjectsMap />} />
-                <Route path="/violations" element={<ViolationsMap />} />
-                <Route path="/affiliations" element={<AffiliationsMap />} />
-                <Route path="/skills" element={<SkillsMap />} />
-                <Route path="/academic-records" element={<AcademicRecordsMap />} />
-                <Route path="/non-academic-histories" element={<NonAcademicHistoriesMap />} />
-              </>}
+            <Suspense fallback={<PageFallback />}>
+              <Routes>
+                {/* ── Admin ── */}
+                {role === 'admin' && <>
+                  <Route path="/" element={<DashboardAdmin />} />
+                  <Route path="/student-map" element={<StudentDataMap />} />
+                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/search" element={<Search />} />
+                  <Route path="/subjects" element={<SubjectsMap />} />
+                  <Route path="/violations" element={<ViolationsMap />} />
+                  <Route path="/affiliations" element={<AffiliationsMap />} />
+                  <Route path="/skills" element={<SkillsMap />} />
+                  <Route path="/academic-records" element={<AcademicRecordsMap />} />
+                  <Route path="/non-academic-histories" element={<NonAcademicHistoriesMap />} />
+                </>}
 
-              {/* ── Student ── */}
-              {role === 'student' && <>
-                <Route path="/" element={<DashboardStudent />} />
-                <Route path="/my-skills" element={<StudentSkills />} />
-                <Route path="/my-affiliations" element={<StudentAffiliations />} />
-                <Route path="/my-activities" element={<StudentNonAcademicActivities />} />
-                <Route path="/change-password" element={<ChangePassword />} />
-              </>}
+                {/* ── Student ── */}
+                {role === 'student' && <>
+                  <Route path="/" element={<DashboardStudent />} />
+                  <Route path="/my-skills" element={<StudentSkills />} />
+                  <Route path="/my-affiliations" element={<StudentAffiliations />} />
+                  <Route path="/my-activities" element={<StudentNonAcademicActivities />} />
+                  <Route path="/change-password" element={<ChangePassword />} />
+                </>}
 
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
           </Layout>
         </PrivateRoute>
       } />

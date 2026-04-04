@@ -13,14 +13,14 @@ export default function LoadingScreen({ onDone }) {
   const { setVisible } = useLoading();
 
   useEffect(() => {
-    // Always run the full animation then dismiss
-    const hold = setTimeout(() => setExit(true), 3400);
+    // Shorter animation — 1.8s hold, 2.2s total
+    const hold = setTimeout(() => setExit(true), 1800);
     const done = setTimeout(() => {
       setVisible(false);
       if (onDone) onDone();
-    }, 3900);
+    }, 2200);
     return () => { clearTimeout(hold); clearTimeout(done); };
-  }, []); // run once on mount
+  }, []);
 
   return (
     <div className={`ls-overlay${exit ? ' ls-exit' : ''}`}>

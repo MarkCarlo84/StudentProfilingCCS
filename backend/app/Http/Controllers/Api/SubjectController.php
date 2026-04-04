@@ -26,7 +26,10 @@ class SubjectController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'subject_code'   => 'required|string|max:30|unique:subjects',
+            'subject_code'   => [
+                'required', 'string', 'max:30',
+                \Illuminate\Validation\Rule::unique('subjects')->where('program', $request->program),
+            ],
             'subject_name'   => 'required|string|max:200',
             'units'          => 'nullable|integer|min:1|max:9',
             'pre_requisite'  => 'nullable|string|max:200',
@@ -51,7 +54,10 @@ class SubjectController extends Controller
     public function update(Request $request, Subject $subject): JsonResponse
     {
         $data = $request->validate([
-            'subject_code'  => "sometimes|string|max:30|unique:subjects,subject_code,{$subject->id}",
+            'subject_code'  => [
+                'sometimes', 'string', 'max:30',
+                \Illuminate\Validation\Rule::unique('subjects')->where('program', $request->program ?? $subject->program)->ignore($subject->id),
+            ],
             'subject_name'  => 'sometimes|string|max:200',
             'units'         => 'nullable|integer|min:1|max:9',
             'pre_requisite' => 'nullable|string|max:200',

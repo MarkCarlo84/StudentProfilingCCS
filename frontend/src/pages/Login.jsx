@@ -245,7 +245,6 @@ export default function Login() {
             )}
 
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
                 *, *::before, *::after { box-sizing: border-box; }
                 body { margin: 0; overflow: hidden; }
 
